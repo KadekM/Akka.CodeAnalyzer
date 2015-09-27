@@ -17,12 +17,12 @@ namespace Akka.CodeAnalyzer
     {
         public const string DiagnosticId = nameof(PassingActorAroundAnalyzer);
 
-        private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.PassingActorAroundAnalyzerTitle), Resources.ResourceManager, typeof(Resources));
-        private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.PassingActorAroundMessageFormat), Resources.ResourceManager, typeof(Resources));
-        private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.PassingActorAroundDescription), Resources.ResourceManager, typeof(Resources));
+        private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.ClosingOverActorStateAnalyzerTitle), Resources.ResourceManager, typeof(Resources));
+        private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.ClosingOverActorStateMessage), Resources.ResourceManager, typeof(Resources));
+        private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.ClosingOverActorStateDescription), Resources.ResourceManager, typeof(Resources));
         private const string Category = "Usage";
 
-        private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
+        private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -56,27 +56,36 @@ namespace Akka.CodeAnalyzer
                             return true;
                     }
                     return false;
-                }).ToList();
+                })
+                .SelectMany(x => x.DescendantNodesOfType<LambdaExpressionSyntax>())
+                .SelectMany(x => x.DescendantNodesOfType<MemberAccessExpressionSyntax>());
+
+            foreach (var lambda in invocations)
+            {
+                CheckLambda(lambda, context);
+            }
 
             var tasks = context.CodeBlock
-                .DescendantNodes(_ => true)
-                .OfType<ObjectCreationExpressionSyntax>()
-                .SelectMany(x => x.DescendantNodes(_ => true).OfType<LambdaExpressionSyntax>());
+               .DescendantNodes(_ => true)
+               .OfType<ObjectCreationExpressionSyntax>()
+               .SelectMany(x => x.DescendantNodesOfType<LambdaExpressionSyntax>())
+               .SelectMany(x => x.DescendantNodesOfType<MemberAccessExpressionSyntax>());
 
-
-
-            var lambdasInside =
-                invocations.SelectMany(x => x.DescendantNodesOfType<LambdaExpressionSyntax>())
-                    .SelectMany(x => x.DescendantNodesOfType<MemberAccessExpressionSyntax>());
-
-            foreach (var lambda in lambdasInside)
+            foreach (var lambda in tasks)
             {
-                var access = context.SemanticModel.GetSymbolInfo(lambda.Expression);
-                if (IsFromActor(access.Symbol.ContainingType))
-                {
-                    var diag = Diagnostic.Create(Rule, lambda.GetLocation(), access.Symbol.Name, access.Symbol.Name);
-                    context.ReportDiagnostic(diag);
-                }
+                CheckLambda(lambda, context);
+            }
+        }
+
+        private static void CheckLambda(MemberAccessExpressionSyntax lambda, CodeBlockAnalysisContext context)
+        {
+            var access = context.SemanticModel.GetSymbolInfo(lambda.Expression);
+            // TODO readonly are ok.. until we can reasearch immutabiltiy
+            if (access.Symbol?.Kind != SymbolKind.Local 
+                && IsFromActor(access.Symbol?.ContainingType))
+            {
+                var diag = Diagnostic.Create(Rule, lambda.GetLocation(), access.Symbol.Name, access.Symbol.Name);
+                context.ReportDiagnostic(diag);
             }
         }
 

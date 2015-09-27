@@ -62,6 +62,33 @@ namespace Akka.CodeAnalyzer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Closed over actor state.
+        /// </summary>
+        internal static string ClosingOverActorStateAnalyzerTitle {
+            get {
+                return ResourceManager.GetString("ClosingOverActorStateAnalyzerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You closed over actor state in what is potentionally asynchronous computation..
+        /// </summary>
+        internal static string ClosingOverActorStateDescription {
+            get {
+                return ResourceManager.GetString("ClosingOverActorStateDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type name&apos;{0}&apos; should not be closed around.
+        /// </summary>
+        internal static string ClosingOverActorStateMessage {
+            get {
+                return ResourceManager.GetString("ClosingOverActorStateMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid type passed around.
         /// </summary>
         internal static string PassingActorAroundAnalyzerTitle {
