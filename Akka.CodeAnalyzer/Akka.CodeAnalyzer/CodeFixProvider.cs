@@ -22,7 +22,7 @@ namespace Akka.CodeAnalyzer
 
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(AkkaCodeAnalyzerAnalyzer.DiagnosticId); }
+            get { return ImmutableArray.Create(PassingActorAroundAnalyzer.DiagnosticId); }
         }
 
         public sealed override FixAllProvider GetFixAllProvider()

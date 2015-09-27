@@ -11,38 +11,42 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Akka.CodeAnalyzer
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class AkkaCodeAnalyzerAnalyzer : DiagnosticAnalyzer
+    public class PassingActorAroundAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "AkkaCodeAnalyzer";
+        public const string DiagnosticId = nameof(PassingActorAroundAnalyzer);
 
-        // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.AnalyzerTitle), Resources.ResourceManager, typeof(Resources));
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.AnalyzerMessageFormat), Resources.ResourceManager, typeof(Resources));
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.AnalyzerDescription), Resources.ResourceManager, typeof(Resources));
-        private const string Category = "Naming";
+        private const string Category = "Usage";
 
         private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
+
         public override void Initialize(AnalysisContext context)
         {
-            // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
-            context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
+            context.RegisterCodeBlockAction(Analyze);
         }
 
-        private static void AnalyzeSymbol(SymbolAnalysisContext context)
+        private static void Analyze(CodeBlockAnalysisContext context)
         {
-            // TODO: Replace the following code with your own analysis, generating Diagnostic objects for any issues you find
-            var namedTypeSymbol = (INamedTypeSymbol)context.Symbol;
-
-            // Find just those named type symbols with names containing lowercase letters.
-            if (namedTypeSymbol.Name.ToCharArray().Any(char.IsLower))
+            if (context.OwningSymbol.Kind != SymbolKind.Method)
             {
-                // For all such symbols, produce a diagnostic.
-                var diagnostic = Diagnostic.Create(Rule, namedTypeSymbol.Locations[0], namedTypeSymbol.Name);
+                return;
+            }
 
-                context.ReportDiagnostic(diagnostic);
+            var method = (IMethodSymbol)context.OwningSymbol;
+
+            foreach (var parameter in method.Parameters)
+            {
+                if (parameter.Type.AllInterfaces.Select(x => x.MetadataName).Contains("IInternalActor"))
+                {
+                    var diag = Diagnostic.Create(Rule, parameter.Locations[0], parameter.Name,
+                        parameter.ContainingSymbol.Name);
+                    context.ReportDiagnostic(diag);
+                }
             }
         }
     }

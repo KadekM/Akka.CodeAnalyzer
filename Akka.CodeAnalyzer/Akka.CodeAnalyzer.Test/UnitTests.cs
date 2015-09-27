@@ -76,7 +76,7 @@ namespace Akka.CodeAnalyzer.Test
 
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
         {
-            return new AkkaCodeAnalyzerAnalyzer();
+            return new PassingActorAroundAnalyzer();
         }
     }
 }
