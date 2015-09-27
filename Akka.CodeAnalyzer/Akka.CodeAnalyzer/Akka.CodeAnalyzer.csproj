@@ -33,6 +33,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CodeFixProvider.cs" />
+    <Compile Include="ClosingOverActorStateAnalyzer.cs" />
+    <Compile Include="Extensions\SyntaxNodeExt.cs" />
     <Compile Include="PassingActorAroundAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">

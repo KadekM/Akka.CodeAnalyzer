@@ -117,16 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AnalyzerDescription" xml:space="preserve">
+  <data name="PassingActorAroundAnalyzerTitle" xml:space="preserve">
+    <value>Invalid type passed around</value>
+    <comment>The title of the diagnostic.</comment>
+  </data>
+  <data name="PassingActorAroundDescription" xml:space="preserve">
     <value>You should not pass around instances of actors. Pass IActorRefs.</value>
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
-  <data name="AnalyzerMessageFormat" xml:space="preserve">
+  <data name="PassingActorAroundMessageFormat" xml:space="preserve">
     <value>Type name '{0}' should not be passed around.</value>
     <comment>The format-able message the diagnostic displays.</comment>
-  </data>
-  <data name="AnalyzerTitle" xml:space="preserve">
-    <value>Invalid type passed around</value>
-    <comment>The title of the diagnostic.</comment>
   </data>
 </root>

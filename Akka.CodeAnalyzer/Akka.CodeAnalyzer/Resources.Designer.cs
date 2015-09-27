@@ -62,29 +62,29 @@ namespace Akka.CodeAnalyzer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid type passed around.
+        /// </summary>
+        internal static string PassingActorAroundAnalyzerTitle {
+            get {
+                return ResourceManager.GetString("PassingActorAroundAnalyzerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You should not pass around instances of actors. Pass IActorRefs..
         /// </summary>
-        internal static string AnalyzerDescription {
+        internal static string PassingActorAroundDescription {
             get {
-                return ResourceManager.GetString("AnalyzerDescription", resourceCulture);
+                return ResourceManager.GetString("PassingActorAroundDescription", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Type name &apos;{0}&apos; should not be passed around..
         /// </summary>
-        internal static string AnalyzerMessageFormat {
+        internal static string PassingActorAroundMessageFormat {
             get {
-                return ResourceManager.GetString("AnalyzerMessageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid type passed around.
-        /// </summary>
-        internal static string AnalyzerTitle {
-            get {
-                return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
+                return ResourceManager.GetString("PassingActorAroundMessageFormat", resourceCulture);
             }
         }
     }
