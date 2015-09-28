@@ -81,7 +81,7 @@ namespace Akka.CodeAnalyzer
         {
             var access = context.SemanticModel.GetSymbolInfo(lambda.Expression);
             // TODO readonly are ok.. until we can reasearch immutabiltiy
-            if (access.Symbol?.Kind != SymbolKind.Local 
+            if (access.Symbol?.Kind == SymbolKind.Property 
                 && IsFromActor(access.Symbol?.ContainingType))
             {
                 var diag = Diagnostic.Create(Rule, lambda.GetLocation(), access.Symbol.Name, access.Symbol.Name);
