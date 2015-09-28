@@ -38,10 +38,6 @@ namespace Akka.CodeAnalyzer
             var shouldcheck = IsFromActor(context.OwningSymbol.ContainingType);
             if (!shouldcheck) return;
 
-      var zz = new Task(() =>
-      {
-          
-      });
            // context.OwningSymbol.ContainingSymbol.
            // var sm = context.SemanticModel.GetDeclaredSymbol(parent);
             var invocations = context.CodeBlock
