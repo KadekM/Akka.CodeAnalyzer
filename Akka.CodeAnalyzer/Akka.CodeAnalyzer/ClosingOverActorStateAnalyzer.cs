@@ -76,8 +76,11 @@ namespace Akka.CodeAnalyzer
         private static void CheckLambda(MemberAccessExpressionSyntax lambda, CodeBlockAnalysisContext context)
         {
             var access = context.SemanticModel.GetSymbolInfo(lambda.Expression);
+            var acc2 = context.SemanticModel.GetDeclaredSymbol(lambda.Expression);
+            var acc3 = context.SemanticModel.GetTypeInfo(lambda.Expression);
             // TODO readonly are ok.. until we can reasearch immutabiltiy
-            if (access.Symbol?.Kind == SymbolKind.Property 
+            if ((access.Symbol?.Kind == SymbolKind.Property ||
+                access.Symbol?.Kind == SymbolKind.Field)
                 && IsFromActor(access.Symbol?.ContainingType))
             {
                 var diag = Diagnostic.Create(Rule, lambda.GetLocation(), access.Symbol.Name, access.Symbol.Name);
@@ -87,10 +90,11 @@ namespace Akka.CodeAnalyzer
 
         private static bool IsFromActor(INamedTypeSymbol containingType)
         {
-           return containingType
-                ?.AllInterfaces
-                .Select(x => x.MetadataName)
-                .Contains("IInternalActor") == true;
+            var interfaces = containingType?.AllInterfaces;
+            var metaNames = interfaces?.Select(x => x.MetadataName);
+           var result = metaNames?.Contains("IInternalActor") == true;
+
+            return result;
         }
     }
 }
